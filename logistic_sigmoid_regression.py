@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 np.random.seed(4)
-data = pd.read_csv("data_classification.csv", header = None)
+data = pd.read_csv("C:\\Users\\HieuVu\\Desktop\\HieuVu\\BTL_Thiet_ke_he_nhung-master\\climate_weather.csv")
 
 true_x = []
 true_y = []
@@ -22,7 +23,7 @@ for element in data.values:
 
 plt.scatter(true_x, true_y, c="b", marker="o")
 plt.scatter(false_x, false_y, c = "r", marker="x")
-# plt.show()
+plt.show()
 
 def sigmoid(z):
     return 1.0 / ( 1 + np.exp(-z))
@@ -46,7 +47,7 @@ def cost_function(feature, weight, label):
     """
     n = len(label)
     prediction = predict_proba(feature, weight)
-
+    label = label.reshape((len(label), 1))
     cost_class1 = -label * np.log(prediction)
     cost_class0 = -(1 - label) * np.log(1 - prediction)
 
@@ -81,7 +82,7 @@ def training(feature, weight, label, learning_rate, iteration):
 
 
 def logistic_sigmoid_regression(X_train, y_train):
-    weights, cost_history = training(feature=X_train, label=y_train, weight=np.random.rand(3,1), learning_rate=0.001, iteration=30)
+    weights, cost_history = training(feature=X_train, label=y_train, weight=np.array([1,1,1]).reshape(3,1), learning_rate=0.8, iteration=100000)
     return weights, cost_history
 
 if __name__ == "__main__":
@@ -95,6 +96,18 @@ if __name__ == "__main__":
     D_new_feature = np.hstack((matrix_ones, D_feature))
     D_label = np.asarray(D_label)
     X_train, X_test, y_train, y_test = train_test_split(D_new_feature, D_label, test_size=0.3, random_state=42)
-    weight, cost_hs = logistic_sigmoid_regression(D_new_feature, D_label)
+    weight, cost_hs = logistic_sigmoid_regression(X_train, y_train)
     predict_probability = predict_proba(X_test, weight)
-    y_predict = predict(predict_probability)
+    predict_label = []
+    print(weight)
+    for i in range(len(predict_probability)):
+        pre_label = predict(predict_probability[i])
+        predict_label.append(pre_label)
+    
+    print(cost_hs)
+    print("min_cost_hs:",min(cost_hs))
+    print("max_cost_hs:",max(cost_hs))
+    print(predict_label)
+    print(y_test)
+    print(accuracy_score(y_test, predict_label))
+    print(weight)
